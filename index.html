@@ -188,12 +188,16 @@
         window.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
             touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+			
         });
 
         window.addEventListener('touchmove', (e) => {
-            if (!touchStartX) return;
+            if (!touchStartX && !touchStartY) return;
             const touch = e.touches[0];
             const touchMoveX = touch.clientX;
+			const touchMoveY = touch.clientY;
+			
             if (touchMoveX > touchStartX) {
                 x += speed;
                 facingRight = true;
@@ -201,7 +205,15 @@
                 x -= speed;
                 facingRight = false;
             }
+			if (touchMoveY > touchStartY) {
+                y += speed;
+            } else if (touchMoveY < touchStartX) {
+                y -= speed;
+            }
+			
+			
             touchStartX = touchMoveX;  // Update start position to current
+            touchStartY = touchMoveY;  // Update start position to current
         });
 
         window.addEventListener('touchend', () => {
