@@ -176,6 +176,7 @@
                 if (keys['ArrowDown'] && y < canvas.height-airplaneHeight) y += speed;
 
                 requestAnimationFrame(draw);
+
             }
 
             draw();
@@ -184,7 +185,49 @@
         window.addEventListener('keydown', (e) => keys[e.key] = true);
         window.addEventListener('keyup', (e) => keys[e.key] = false);
 
+
         // Add touch event listeners
+        window.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (touchStartX === null || touchStartY === null) return;
+            const touch = e.touches[0];
+            const touchMoveX = touch.clientX;
+            const touchMoveY = touch.clientY;
+            const dx = touchMoveX - touchStartX;
+            const dy = touchMoveY - touchStartY;
+
+            // Move horizontally
+            if (dx > 0) {
+                x += speed;
+                facingRight = true;
+            } else if (dx < 0) {
+                x -= speed;
+                facingRight = false;
+            }
+
+            // Move vertically
+            if (dy > 0) {
+                y += speed;
+            } else if (dy < 0) {
+                y -= speed;
+            }
+
+            touchStartX = touchMoveX;  // Update start position to current
+            touchStartY = touchMoveY;  // Update start position to current
+        });
+
+        window.addEventListener('touchend', () => {
+            touchStartX = null;
+            touchStartY = null;
+        });
+		
+		
+/*        // Add touch event listeners
         window.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
             touchStartX = touch.clientX;
@@ -219,7 +262,7 @@
         window.addEventListener('touchend', () => {
             touchStartX = null;
         });
-
+*/
         setInterval(generateMeteorite, 200);
     </script>
 </body>
