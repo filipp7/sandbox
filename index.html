@@ -4,42 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airplane Game</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; background: #000; }
-        #life-count {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 1.5em;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-        }
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DotGothic16">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=UnifrakturMaguntia">
+
+<style>
+        body { margin: 0; font-family: "DotGothic16", sans-serif;}
+        canvas { display: block; background: #fff; }
         #game-over {
             display: none;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2em;
+            font-size: 10em;
             color: white;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
+			font-family: "UnifrakturMaguntia";
+			text-align: center;
+			border-radius: 15px;
         }
+		#lives-counter {
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			color: white;
+			font-size: 1.5em;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 10px;
+			border-radius: 5px;
+			text-align: left;
+			
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div id="life-count">Lives: 3</div>
     <div id="game-over">Game Over</div>
+    <div id="lives-counter"> Lives: 3<br>Score: 0</div>
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const gameOverDiv = document.getElementById('game-over');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth - 20;
+        canvas.height = window.innerHeight - 20;
 
         const img = new Image();
         img.src = './airplane.png';  // Ensure airplane.png is in the same directory
@@ -52,7 +59,8 @@
         let facingRight = true;
         let lives = 3;
         let gameActive = true;
-        let touchStartX = null;
+		let distance = 0;
+		let total_distance = 0;
 
         const meteorites = [];
         const meteoriteSize = 50;
@@ -75,7 +83,7 @@
                 } else if (checkCollision(meteorites[i])) {
                     meteorites.splice(i, 1);
                     lives -= 1;
-                    document.getElementById('life-count').innerHTML = Lives: ${lives}<br>Be careful!;
+					document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`;
                     if (lives <= 0) {
                         gameActive = false;
                         gameOverDiv.style.display = 'block';
@@ -91,7 +99,6 @@
         }
 
         img.onload = () => {
-            document.getElementById('life-count').innerHTML = Lives: ${lives}<br>Be careful!;
             function draw() {
                 if (!gameActive) return;
 
@@ -114,13 +121,27 @@
                 updateMeteorites();
 
                 // Update airplane position
-                if (keys['ArrowRight']) {
+                if (keys['ArrowRight'] && x < canvas.width-50) {
                     x += speed;
                     facingRight = true;
+					distance = distance + speed;
+					total_distance = total_distance + speed;
+					if( distance > 800 ) {
+						lives += 1;
+						document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`
+						distance = 0;
+					}
                 }
-                if (keys['ArrowLeft']) {
+                if (keys['ArrowLeft'] && x>0) {
                     x -= speed;
                     facingRight = false;
+					distance = distance + speed;
+					total_distance = total_distance + speed;
+					if( distance > 800 ) {
+						lives += 1;
+						document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`
+						distance = 0;
+					}
                 }
                 if (keys['ArrowUp']) y -= speed;
                 if (keys['ArrowDown']) y += speed;
@@ -134,31 +155,7 @@
         window.addEventListener('keydown', (e) => keys[e.key] = true);
         window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-        // Add touch event listeners
-        canvas.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (!touchStartX) return;
-            const touch = e.touches[0];
-            const touchMoveX = touch.clientX;
-            if (touchMoveX > touchStartX) {
-                x += speed;
-                facingRight = true;
-            } else if (touchMoveX < touchStartX) {
-                x -= speed;
-                facingRight = false;
-            }
-            touchStartX = touchMoveX;  // Update start position to current
-        });
-
-        canvas.addEventListener('touchend', () => {
-            touchStartX = null;
-        });
-
-        setInterval(generateMeteorite, 1000);
+        setInterval(generateMeteorite, 100);
     </script>
 </body>
 </html>
