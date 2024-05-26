@@ -63,8 +63,10 @@
 		let total_distance = 0;
 
         const meteorites = [];
-        const meteoriteSize = 50;
+        const meteoriteSize = 25;
         const meteoriteSpeed = 3;
+		const plane_size_x = 100;
+		const plane_size_y = 100;
 
         function generateMeteorite() {
             const x = Math.random() * (canvas.width - meteoriteSize);
@@ -108,9 +110,9 @@
                 ctx.save();
                 if (!facingRight) {
                     ctx.scale(-1, 1);
-                    ctx.drawImage(img, -x - 50, y, 50, 50);
+                    ctx.drawImage(img, -x - plane_size_x, y, plane_size_x, plane_size_y);
                 } else {
-                    ctx.drawImage(img, x, y, 50, 50);
+                    ctx.drawImage(img, x, y, plane_size_x, plane_size_y);
                 }
                 ctx.restore();
 
@@ -121,7 +123,7 @@
                 updateMeteorites();
 
                 // Update airplane position
-                if (keys['ArrowRight'] && x < canvas.width-50) {
+                if (keys['ArrowRight'] && x < canvas.width-plane_size_x) {
                     x += speed;
                     facingRight = true;
 					distance = distance + speed;
@@ -143,8 +145,8 @@
 						distance = 0;
 					}
                 }
-                if (keys['ArrowUp']) y -= speed;
-                if (keys['ArrowDown']) y += speed;
+                if (keys['ArrowUp'] && y>0) y -= speed;
+                if (keys['ArrowDown'] && x < canvas.height-plane_size_y) y += speed;
 
                 requestAnimationFrame(draw);
             }
@@ -155,7 +157,31 @@
         window.addEventListener('keydown', (e) => keys[e.key] = true);
         window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-        setInterval(generateMeteorite, 100);
+        // Add touch event listeners
+        window.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!touchStartX) return;
+            const touch = e.touches[0];
+            const touchMoveX = touch.clientX;
+            if (touchMoveX > touchStartX) {
+                x += speed;
+                facingRight = true;
+            } else if (touchMoveX < touchStartX) {
+                x -= speed;
+                facingRight = false;
+            }
+            touchStartX = touchMoveX;  // Update start position to current
+        });
+
+        window.addEventListener('touchend', () => {
+            touchStartX = null;
+        });
+
+        setInterval(generateMeteorite, 200);
     </script>
 </body>
 </html>
