@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airplane Game</title>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DotGothic16">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=UnifrakturMaguntia">
 
 <style>
-        body { margin: 0; font-family: "Sofia", sans-serif;}
+        body { margin: 0; font-family: "DotGothic16", sans-serif;}
         canvas { display: block; background: #fff; }
         #game-over {
             display: none;
@@ -18,26 +18,29 @@
             transform: translate(-50%, -50%);
             font-size: 10em;
             color: white;
-            background: rgba(0, 230, 255, 0.8);
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
 			font-family: "UnifrakturMaguntia";
+			text-align: center;
+			border-radius: 15px;
         }
 		#lives-counter {
 			position: absolute;
-			top: 10px;
-			right: 100px;
+			bottom: 10px;
+			right: 10px;
 			color: white;
 			font-size: 1.5em;
 			background: rgba(0, 0, 0, 0.5);
 			padding: 10px;
 			border-radius: 5px;
-			width: 1000px;
+			text-align: left;
+			
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <div id="game-over">Game Over</div>
-    <div id="lives-counter"> Lives: 3</div>
+    <div id="lives-counter"> Lives: 3<br>Score: 0</div>
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -57,6 +60,7 @@
         let lives = 3;
         let gameActive = true;
 		let distance = 0;
+		let total_distance = 0;
 
         const meteorites = [];
         const meteoriteSize = 50;
@@ -79,7 +83,7 @@
                 } else if (checkCollision(meteorites[i])) {
                     meteorites.splice(i, 1);
                     lives -= 1;
-					document.getElementById('lives-counter').textContent = `Plane lives matter: ${lives}`
+					document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`;
                     if (lives <= 0) {
                         gameActive = false;
                         gameOverDiv.style.display = 'block';
@@ -117,23 +121,25 @@
                 updateMeteorites();
 
                 // Update airplane position
-                if (keys['ArrowRight']) {
+                if (keys['ArrowRight'] && x < canvas.width-50) {
                     x += speed;
                     facingRight = true;
 					distance = distance + speed;
+					total_distance = total_distance + speed;
 					if( distance > 800 ) {
 						lives += 1;
-						document.getElementById('lives-counter').textContent = `Plane lives matter: ${lives}`;
+						document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`
 						distance = 0;
 					}
                 }
-                if (keys['ArrowLeft']) {
+                if (keys['ArrowLeft'] && x>0) {
                     x -= speed;
                     facingRight = false;
 					distance = distance + speed;
+					total_distance = total_distance + speed;
 					if( distance > 800 ) {
 						lives += 1;
-						document.getElementById('lives-counter').textContent = `Plane lives matter: ${lives}`;
+						document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`
 						distance = 0;
 					}
                 }
