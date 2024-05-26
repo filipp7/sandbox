@@ -34,13 +34,28 @@
 			padding: 10px;
 			border-radius: 5px;
 			text-align: left;
-			
+	
+
+
+		.wrapper {
+			text-align: center;
+		}
+
+		.button {
+			position: absolute;
+			top: 50%;
+		}
+
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <div id="game-over">Game Over</div>
     <div id="lives-counter"> Lives: 3<br>Score: 0</div>
+	<div id="restart" class="wrapper" style="display:none;">
+ 		<button>Play Again</button>
+
+	</div>	
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -90,6 +105,8 @@
                     if (lives <= 0) {
                         gameActive = false;
                         gameOverDiv.style.display = 'block';
+						document.getElementById('restart').style.display = 'block';
+
                     }
                 }
             }
@@ -180,7 +197,8 @@
                 }
                 if (keys['ArrowUp'] && y>0) y -= speed;
                 if (keys['ArrowDown'] && y < canvas.height-airplaneHeight) y += speed;
-
+				
+				
 				updateMeteoriteSpeed();
 
                 requestAnimationFrame(draw);
@@ -192,7 +210,20 @@
 
         window.addEventListener('keydown', (e) => keys[e.key] = true);
         window.addEventListener('keyup', (e) => keys[e.key] = false);
-
+		
+		document.getElementById('restart').addEventListener('click', () => {
+			// Reset game state
+			x = canvas.width / 2;
+			y = canvas.height / 2;
+			lives = 3;
+			total_distance = 0;
+			meteorites.length = 0; // Clear meteorites
+			gameOverDiv.style.display = 'none';
+			document.getElementById('restart').style.display = 'none'; // Hide the restart button
+			document.getElementById('lives-counter').innerHTML = ` Lives: ${lives}<br>Score: ${total_distance}`;
+			gameActive = true;
+			draw(); // Restart the game loop
+		});
 
         // Add touch event listeners
         window.addEventListener('touchstart', (e) => {
