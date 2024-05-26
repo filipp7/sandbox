@@ -64,7 +64,7 @@
 
         const meteorites = [];
         const meteoriteSize = 25;
-        const meteoriteSpeed = 3;
+        let meteoriteSpeed = 3;
 		const airplaneWidth = 100;
 		const airplaneHeight = 100;
 
@@ -121,12 +121,18 @@
 			return false;
 		}
 
-/*        function checkCollision(meteorite) {
-            const dx = x - meteorite.x;
-            const dy = y - meteorite.y;
-            return (dx < meteoriteSize && dx > -meteoriteSize) && (dy < meteoriteSize && dy > -meteoriteSize);
-        }
-*/
+		function updateMeteoriteSpeed() {
+			if (total_distance >= 15000) {
+				meteoriteSpeed = 9;
+			} else if (total_distance >= 7000) {
+				meteoriteSpeed = 7;
+			} else if (total_distance >= 2000) {
+				meteoriteSpeed = 5;
+			} else {
+				meteoriteSpeed = 3;
+			}
+		}
+		
         img.onload = () => {
             function draw() {
                 if (!gameActive) return;
@@ -175,10 +181,12 @@
                 if (keys['ArrowUp'] && y>0) y -= speed;
                 if (keys['ArrowDown'] && y < canvas.height-airplaneHeight) y += speed;
 
+				updateMeteoriteSpeed();
+
                 requestAnimationFrame(draw);
 
             }
-
+			
             draw();
         };
 
@@ -227,43 +235,8 @@
         });
 		
 		
-/*        // Add touch event listeners
-        window.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-			
-        });
 
-        window.addEventListener('touchmove', (e) => {
-            if (!touchStartX && !touchStartY) return;
-            const touch = e.touches[0];
-            const touchMoveX = touch.clientX;
-			const touchMoveY = touch.clientY;
-			
-            if (touchMoveX > touchStartX) {
-                x += speed;
-                facingRight = true;
-            } else if (touchMoveX < touchStartX) {
-                x -= speed;
-                facingRight = false;
-            }
-			if (touchMoveY > touchStartY) {
-                y += speed;
-            } else if (touchMoveY < touchStartX) {
-                y -= speed;
-            }
-			
-			
-            touchStartX = touchMoveX;  // Update start position to current
-            touchStartY = touchMoveY;  // Update start position to current
-        });
-
-        window.addEventListener('touchend', () => {
-            touchStartX = null;
-        });
-*/
-        setInterval(generateMeteorite, 200);
+        setInterval(generateMeteorite, 150);
     </script>
 </body>
 </html>
