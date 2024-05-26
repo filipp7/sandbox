@@ -65,8 +65,9 @@
         const meteorites = [];
         const meteoriteSize = 25;
         const meteoriteSpeed = 3;
-		const plane_size_x = 100;
-		const plane_size_y = 100;
+		const airplaneWidth = 100;
+		const airplaneHeight = 100;
+
 
         function generateMeteorite() {
             const x = Math.random() * (canvas.width - meteoriteSize);
@@ -94,12 +95,38 @@
             }
         }
 
-        function checkCollision(meteorite) {
+		function checkCollision(meteorite) {
+			const meteoriteWidth = meteoriteSize; // Assuming meteorite size is the same for width and height
+
+			// Calculate the boundaries of the airplane
+			const airplaneLeft = x;
+			const airplaneRight = x + airplaneWidth;
+			const airplaneTop = y;
+			const airplaneBottom = y + airplaneHeight;
+
+			// Calculate the boundaries of the meteorite
+			const meteoriteLeft = meteorite.x;
+			const meteoriteRight = meteorite.x + meteoriteWidth;
+			const meteoriteTop = meteorite.y;
+			const meteoriteBottom = meteorite.y + meteoriteWidth; // Assuming square meteorites
+
+			// Check if there is an overlap
+			if (airplaneRight > meteoriteLeft &&
+				airplaneLeft < meteoriteRight &&
+				airplaneBottom > meteoriteTop &&
+				airplaneTop < meteoriteBottom) {
+				return true;
+			}
+
+			return false;
+		}
+
+/*        function checkCollision(meteorite) {
             const dx = x - meteorite.x;
             const dy = y - meteorite.y;
             return (dx < meteoriteSize && dx > -meteoriteSize) && (dy < meteoriteSize && dy > -meteoriteSize);
         }
-
+*/
         img.onload = () => {
             function draw() {
                 if (!gameActive) return;
@@ -110,9 +137,9 @@
                 ctx.save();
                 if (!facingRight) {
                     ctx.scale(-1, 1);
-                    ctx.drawImage(img, -x - plane_size_x, y, plane_size_x, plane_size_y);
+                    ctx.drawImage(img, -x - airplaneWidth, y, airplaneWidth, airplaneHeight);
                 } else {
-                    ctx.drawImage(img, x, y, plane_size_x, plane_size_y);
+                    ctx.drawImage(img, x, y, airplaneWidth, airplaneHeight);
                 }
                 ctx.restore();
 
@@ -123,7 +150,7 @@
                 updateMeteorites();
 
                 // Update airplane position
-                if (keys['ArrowRight'] && x < canvas.width-plane_size_x) {
+                if (keys['ArrowRight'] && x < canvas.width-airplaneWidth) {
                     x += speed;
                     facingRight = true;
 					distance = distance + speed;
@@ -146,7 +173,7 @@
 					}
                 }
                 if (keys['ArrowUp'] && y>0) y -= speed;
-                if (keys['ArrowDown'] && y < canvas.height-plane_size_y) y += speed;
+                if (keys['ArrowDown'] && y < canvas.height-airplaneHeight) y += speed;
 
                 requestAnimationFrame(draw);
             }
