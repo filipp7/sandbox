@@ -146,7 +146,7 @@
 					}
                 }
                 if (keys['ArrowUp'] && y>0) y -= speed;
-                if (keys['ArrowDown'] && x < canvas.height-plane_size_y) y += speed;
+                if (keys['ArrowDown'] && y < canvas.height-plane_size_y) y += speed;
 
                 requestAnimationFrame(draw);
             }
